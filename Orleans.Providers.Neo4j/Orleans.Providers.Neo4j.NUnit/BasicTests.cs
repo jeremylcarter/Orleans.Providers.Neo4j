@@ -1,7 +1,6 @@
-using NUnit.Framework.Internal;
-using Orleans.Providers.Neo4j.Tests.Grains;
+using Orleans.Providers.Neo4j.NUnit.Grains;
 
-namespace Orleans.Providers.Neo4j.Tests
+namespace Orleans.Providers.Neo4j.NUnit
 {
     public class BasicTests
     {

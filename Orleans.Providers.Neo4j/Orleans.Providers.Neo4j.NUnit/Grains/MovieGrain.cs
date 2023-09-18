@@ -1,4 +1,4 @@
-﻿namespace Orleans.Providers.Neo4j.Tests.Grains
+﻿namespace Orleans.Providers.Neo4j.NUnit.Grains
 {
     public class MovieGrain : Grain<MovieGrainState>, IMovieGrain
     {
