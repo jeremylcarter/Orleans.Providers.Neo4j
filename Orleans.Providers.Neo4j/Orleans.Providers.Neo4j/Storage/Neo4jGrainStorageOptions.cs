@@ -6,5 +6,6 @@
         public required string Database { get; set; } = "neo4j";
         public required string Username { get; set; }
         public required string Password { get; set; }
+        public INeo4JGrainStorageKeyGenerator KeyGenerator { get; set; }
     }
 }

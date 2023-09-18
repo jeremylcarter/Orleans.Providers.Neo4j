@@ -8,6 +8,7 @@ namespace Orleans.Providers.Neo4j.Storage
     public class Neo4jGrainStorage : IGrainStorage, ILifecycleParticipant<ISiloLifecycle>
     {
         private readonly IDriver _driver;
+        private readonly INeo4JGrainStorageKeyGenerator _keyGenerator;
         private readonly string _storageName;
         private readonly Neo4jGrainStorageOptions _options;
         private const string _fieldState = "state";
@@ -18,13 +19,14 @@ namespace Orleans.Providers.Neo4j.Storage
             _storageName = storageName;
             _options = options;
             _driver = GraphDatabase.Driver(options.Uri, AuthTokens.Basic(options.Username, options.Password));
+            _keyGenerator = options.KeyGenerator ?? new Neo4jGrainStorageKeyGenerator();
         }
 
         public async Task ReadStateAsync<T>(string grainType, GrainId grainId, IGrainState<T> grainState)
         {
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
 
-            var grainKey = grainId.Key.ToString();
+            var grainKey = _keyGenerator.Generate(grainId);
             var result = await session.RunAsync($"MATCH (a:{grainType}) WHERE a.id = '{grainKey}' RETURN a.{_fieldState} AS state");
 
             // Get the first record (or null)
@@ -48,7 +50,8 @@ namespace Orleans.Providers.Neo4j.Storage
         {
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
 
-            var grainKey = grainId.Key.ToString();
+            var grainKey = _keyGenerator.Generate(grainId);
+
             var jsonState = JsonSerializer.Serialize(grainState.State);
 
             var currentETag = grainState.ETag;
@@ -80,11 +83,9 @@ namespace Orleans.Providers.Neo4j.Storage
 
         public async Task ClearStateAsync<T>(string grainType, GrainId grainId, IGrainState<T> grainState)
         {
+            var grainKey = _keyGenerator.Generate(grainId);
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
-
-            var grainKey = grainId.Key;
             await session.RunAsync($"MATCH (a:{grainType} {{ id: '{grainKey}' }}) DELETE a RETURN a");
-
             grainState.RecordExists = false;
         }
 
