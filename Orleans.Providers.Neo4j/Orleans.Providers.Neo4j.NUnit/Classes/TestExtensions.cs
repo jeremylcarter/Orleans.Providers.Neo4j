@@ -1,6 +1,6 @@
 ﻿using Orleans.TestingHost;
 
-namespace Orleans.Providers.Neo4j.NUnit
+namespace Orleans.Providers.Neo4j.NUnit.Classes
 {
     public static class TestExtensions
     {
