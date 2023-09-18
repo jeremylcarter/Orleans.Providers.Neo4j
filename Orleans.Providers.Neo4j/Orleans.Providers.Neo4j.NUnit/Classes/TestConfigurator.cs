@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans.TestingHost;
 
-namespace Orleans.Providers.Neo4j.Tests
+namespace Orleans.Providers.Neo4j.NUnit.Classes
 {
     internal class TestConfigurator : ISiloConfigurator
     {
