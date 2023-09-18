@@ -13,7 +13,7 @@ namespace Orleans.Providers.Neo4j.Tests.Common
         public string connectionString { get; set; } = $"bolt://localhost:7687";
         public string connectionPassword { get; set; } = TestContainers.dbPassword;
 
-        public string connectionUsername { get; set; } = "neo4j";
+        public string connectionUsername { get; set; } = TestContainers.dbUsername;
 
         public async Task Connect()
         {
