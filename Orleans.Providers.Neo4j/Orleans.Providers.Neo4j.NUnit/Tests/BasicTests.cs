@@ -6,11 +6,14 @@ namespace Orleans.Providers.Neo4j.NUnit.Tests
     public class BasicTests
     {
         private TestOrleansCluster _testCluster;
+        private TestContainers _testContainers;
 
         [OneTimeSetUp]
         public async Task SetupAsync()
         {
             _testCluster = new TestOrleansCluster();
+            _testContainers = new TestContainers();
+            await _testContainers.CreateNeo4jContainerAsync();
             await _testCluster.BuildAsync();
         }
 

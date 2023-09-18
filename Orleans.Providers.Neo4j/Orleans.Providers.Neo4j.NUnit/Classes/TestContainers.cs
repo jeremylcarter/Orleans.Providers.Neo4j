@@ -11,7 +11,7 @@ namespace Orleans.Providers.Neo4j.NUnit.Classes
     public class TestContainers
     {
         private IContainer _container { get; set; }
-        public async void CreateNeo4jContainerAsync()
+        public async Task CreateNeo4jContainerAsync()
         {
             _container = new ContainerBuilder()
                 .WithImage("neo4j")
@@ -28,7 +28,7 @@ namespace Orleans.Providers.Neo4j.NUnit.Classes
                 .ConfigureAwait(false);
 
         }
-        public async void DestroyNeo4jContainerAsync()
+        public async Task DestroyNeo4jContainerAsync()
         {
             await _container.StopAsync();
         }
