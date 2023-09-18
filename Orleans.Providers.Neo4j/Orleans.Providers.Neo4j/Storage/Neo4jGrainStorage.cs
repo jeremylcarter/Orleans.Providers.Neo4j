@@ -67,6 +67,7 @@ namespace Orleans.Providers.Neo4j.Storage
             else
             {
                 // Update the state and ETag for existing node
+                // Notice we are matching the id and the ETag for idempotency purposes
                 var result = await session.RunAsync($@"
                     MATCH (a:{grainType} {{ id: '{grainKey}', {_fieldEtag}: '{currentETag}' }})
                     SET a.{_fieldState} = $state, a.eTag = '{newETag}'
