@@ -14,8 +14,10 @@
         }
     }
 
+    [Serializable]
     public class MovieGrainState
     {
+        [Property("title")]
         public string Title { get; set; }
     }
 

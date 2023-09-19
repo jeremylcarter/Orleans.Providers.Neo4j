@@ -1,4 +1,6 @@
-﻿namespace Orleans.Providers.Neo4j.Tests.Grains
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Orleans.Providers.Neo4j.Tests.Grains
 {
     public class ActorGrain : Grain<ActorGrainState>, IActorGrain
     {
@@ -14,9 +16,13 @@
         }
     }
 
+    [Serializable]
     public class ActorGrainState
     {
+        [Property("name")]
         public string Name { get; set; }
+        [NotMapped]
+        public bool IgnoreThis { get; set; }
     }
 
     public interface IActorGrain : IGrainWithStringKey

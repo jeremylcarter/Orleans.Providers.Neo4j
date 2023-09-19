@@ -2,8 +2,9 @@
 
 namespace Orleans.Providers.Neo4j.Storage
 {
-    public interface INeo4JGrainStorageKeyGenerator
+    public interface INeo4JGrainStorageGenerator
     {
-        string Generate(GrainId grainId);
+        string GenerateKey(GrainId grainId);
+        string GenerateType(GrainId grainId);
     }
 }
