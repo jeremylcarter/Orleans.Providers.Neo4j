@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Orleans.TestingHost;
 
-namespace Orleans.Providers.Neo4j.NUnit.Classes
+namespace Orleans.Providers.Neo4j.Tests.Common
 {
     public class TestOrleansCluster
     {

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Providers.Neo4j", "Orleans.Providers.Neo4j\Orleans.Providers.Neo4j.csproj", "{7EB72379-4883-4BB5-8EF4-E6390CD1FED6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Providers.Neo4j.NUnit", "Orleans.Providers.Neo4j.NUnit\Orleans.Providers.Neo4j.NUnit.csproj", "{3ED7A8D6-8384-43DB-BB55-D0138087F74D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orleans.Providers.Neo4j.Tests", "Orleans.Providers.Neo4j.Tests\Orleans.Providers.Neo4j.Tests.csproj", "{6851DB1B-9BAE-41B6-B583-F5CBE6463BBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{7EB72379-4883-4BB5-8EF4-E6390CD1FED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EB72379-4883-4BB5-8EF4-E6390CD1FED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EB72379-4883-4BB5-8EF4-E6390CD1FED6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3ED7A8D6-8384-43DB-BB55-D0138087F74D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3ED7A8D6-8384-43DB-BB55-D0138087F74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3ED7A8D6-8384-43DB-BB55-D0138087F74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3ED7A8D6-8384-43DB-BB55-D0138087F74D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6851DB1B-9BAE-41B6-B583-F5CBE6463BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6851DB1B-9BAE-41B6-B583-F5CBE6463BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6851DB1B-9BAE-41B6-B583-F5CBE6463BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6851DB1B-9BAE-41B6-B583-F5CBE6463BBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

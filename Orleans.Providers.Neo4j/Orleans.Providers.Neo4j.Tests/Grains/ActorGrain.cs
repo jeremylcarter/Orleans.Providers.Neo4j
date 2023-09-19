@@ -1,4 +1,4 @@
-﻿namespace Orleans.Providers.Neo4j.NUnit.Grains
+﻿namespace Orleans.Providers.Neo4j.Tests.Grains
 {
     public class ActorGrain : Grain<ActorGrainState>, IActorGrain
     {
