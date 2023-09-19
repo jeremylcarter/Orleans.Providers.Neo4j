@@ -2,28 +2,21 @@
 
 namespace Orleans.Providers.Neo4j.Storage
 {
-    public class Neo4jGrainStorageSimpleProvider : INeo4JGrainStorageProvider
+    internal class Neo4jGrainStorageSimpleProvider : INeo4JGrainStorageProvider
     {
-        public async Task ReadAsync<T>(GrainId grainId, IGrainState<T> grainState)
+        Task INeo4JGrainStorageProvider.ReadAsync<T>(GrainId grainId, IGrainState<T> grainState)
         {
-
+            throw new NotImplementedException();
         }
 
-        public async Task WriteAsync<T>(GrainId grainId, IGrainState<T> grainState)
+        Task INeo4JGrainStorageProvider.WriteAsync<T>(GrainId grainId, IGrainState<T> grainState)
         {
-
+            throw new NotImplementedException();
         }
 
-        public async Task ClearAsync<T>(GrainId grainId, IGrainState<T> grainState)
+        Task INeo4JGrainStorageProvider.ClearAsync<T>(GrainId grainId, IGrainState<T> grainState)
         {
-
+            throw new NotImplementedException();
         }
-    }
-
-    public interface INeo4JGrainStorageProvider
-    {
-        Task ReadAsync<T>(GrainId grainId, IGrainState<T> grainState);
-        Task WriteAsync<T>(GrainId grainId, IGrainState<T> grainState);
-        Task ClearAsync<T>(GrainId grainId, IGrainState<T> grainState);
     }
 }

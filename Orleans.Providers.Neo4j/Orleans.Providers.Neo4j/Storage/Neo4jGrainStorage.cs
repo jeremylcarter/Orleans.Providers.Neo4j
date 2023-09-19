@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace Orleans.Providers.Neo4j.Storage
 {
-    public class Neo4jGrainStorage : IGrainStorage, ILifecycleParticipant<ISiloLifecycle>
+    internal class Neo4jSimpleGrainStorage : IGrainStorage, ILifecycleParticipant<ISiloLifecycle>
     {
         private readonly IDriver _driver;
         private readonly INeo4JGrainStorageKeyGenerator _keyGenerator;
@@ -14,7 +14,7 @@ namespace Orleans.Providers.Neo4j.Storage
         private const string _fieldState = "state";
         private const string _fieldEtag = "eTag";
 
-        public Neo4jGrainStorage(string storageName, Neo4jGrainStorageOptions options)
+        public Neo4jSimpleGrainStorage(string storageName, Neo4jGrainStorageOptions options)
         {
             _storageName = storageName;
             _options = options;
@@ -97,7 +97,7 @@ namespace Orleans.Providers.Neo4j.Storage
 
         public void Participate(ISiloLifecycle lifecycle)
         {
-            lifecycle.Subscribe(OptionFormattingUtilities.Name<Neo4jGrainStorage>(), ServiceLifecycleStage.ApplicationServices, OnStart, OnStop);
+            lifecycle.Subscribe(OptionFormattingUtilities.Name<Neo4jSimpleGrainStorage>(), ServiceLifecycleStage.ApplicationServices, OnStart, OnStop);
         }
 
         private Task OnStart(CancellationToken ct)

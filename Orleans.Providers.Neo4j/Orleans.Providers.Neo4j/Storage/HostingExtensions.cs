@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.Hosting
 
             services.ConfigureNamedOptionForLogging<Neo4jGrainStorageOptions>(name);
 
-            return services.AddSingletonNamedService(name, Neo4jGrainStorageFactory.Create)
+            return services.AddSingletonNamedService(name, Neo4jGrainStorageFactory.CreateSimpleGrainStorage)
                            .AddSingletonNamedService(name, (sp, sn) => (ILifecycleParticipant<ISiloLifecycle>)sp.GetRequiredServiceByName<IGrainStorage>(sn));
         }
     }

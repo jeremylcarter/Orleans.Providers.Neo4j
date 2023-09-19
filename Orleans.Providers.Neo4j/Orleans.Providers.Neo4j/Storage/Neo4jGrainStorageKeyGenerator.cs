@@ -2,7 +2,7 @@
 
 namespace Orleans.Providers.Neo4j.Storage
 {
-    public class Neo4jGrainStorageKeyGenerator : INeo4JGrainStorageKeyGenerator
+    sealed class Neo4jGrainStorageKeyGenerator : INeo4JGrainStorageKeyGenerator
     {
         public string Generate(GrainId grainId)
         {
