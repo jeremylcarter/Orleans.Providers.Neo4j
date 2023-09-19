@@ -1,21 +1,35 @@
-﻿using Docker.DotNet.Models;
-using DotNet.Testcontainers.Builders;
+﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using Neo4j.Driver;
 
 namespace Orleans.Providers.Neo4j.Tests.Common
 {
-    public class TestContainers
+    public class TestDatabaseContainer
     {
-        private IContainer _container { get; set; }
-        public static string dbUsername { get; set; } = "neo4j";
-        public static string dbPassword { get; set; } = "strip-furnace";
-        public async Task CreateNeo4jContainerAsync()
+        private IContainer Container { get; set; }
+        public IDriver Driver { get; set; }
+        public string ConnectionString { get; private set; }
+        public string Username { get; }
+        public string Password { get; }
+        public string Database { get; }
+        public int Port { get; }
+
+        public TestDatabaseContainer(string username = "neo4j", string password = "5yWFV6Od12",
+            string database = "neo4j", int port = 7687)
         {
-            _container = new ContainerBuilder()
-                .WithImage("neo4j")
-                .WithExposedPort("7687")
-                .WithPortBinding("7687", "7687")
-                .WithEnvironment("NEO4J_AUTH", $"{dbUsername}/{dbPassword}")
+            Username = username;
+            Password = password;
+            Database = database;
+            Port = port;
+        }
+
+        public async Task CreateAsync(string version = "5.12.0-community", string containerName = "neo4j-test")
+        {
+            Container = new ContainerBuilder()
+            .WithImage($"neo4j:{version}")
+                .WithExposedPort(Port)
+                .WithPortBinding(Port, Port)
+                .WithEnvironment("NEO4J_AUTH", $"{Username}/{Password}")
                 .WithEnvironment("NEO4J_dbms_memory_pagecache_size", "1G")
                 .WithEnvironment("NEO4J_dbms_memory_heap_max__size", "1G")
                 .WithEnvironment("NEO4J_dbms_memory_heap_initial__size", "1G")
@@ -23,28 +37,36 @@ namespace Orleans.Providers.Neo4j.Tests.Common
                 .Build();
 
             // Start the container.
-            await _container.StartAsync();
-            var log = await _container.GetLogsAsync();
+            await Container.StartAsync();
+            var log = await Container.GetLogsAsync();
             await WaitForLogMessageAsync("Started");
+
+            var connectionString = $"bolt://{Container.Hostname}:{Port}";
+            Driver = GraphDatabase.Driver(connectionString, AuthTokens.Basic(Username, Password));
+            await Driver.VerifyConnectivityAsync();
+            ConnectionString = connectionString;
         }
-        public async Task DestroyNeo4jContainerAsync()
+        public async Task ShutdownAsync()
         {
-            await _container.StopAsync();
+            await Driver.DisposeAsync();
+            await Container.StopAsync();
         }
 
-        private async Task WaitForLogMessageAsync(string targetMessage)
+        private async Task WaitForLogMessageAsync(string targetMessage, int maxRetries = 60, CancellationToken cancellationToken = default)
         {
-            while (true)
+            int attempt = 0;
+
+            while (!cancellationToken.IsCancellationRequested && attempt < maxRetries)
             {
-                var log = await _container.GetLogsAsync();
+                var log = await Container.GetLogsAsync();
 
                 if (log.ToString().Contains(targetMessage))
                 {
-                    Console.WriteLine($"Found the target message: {targetMessage}");
-                    break;
+                    return;
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                attempt++;
             }
         }
     }

@@ -6,18 +6,27 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
     public class BasicTests
     {
         private TestOrleansCluster _testCluster;
-        private TestContainers _testContainers;
-        private TestDb _testDb;
+        private TestDatabaseContainer _testDatabaseContainer;
 
         [OneTimeSetUp]
         public async Task SetupAsync()
         {
+            _testDatabaseContainer = new TestDatabaseContainer();
+            await _testDatabaseContainer.CreateAsync();
+
             _testCluster = new TestOrleansCluster();
-            _testContainers = new TestContainers();
-            _testDb = new TestDb();
-            await _testContainers.CreateNeo4jContainerAsync(); ;
-            await _testDb.Connect();
-            await _testCluster.BuildAsync();
+
+            var options = new TestOrleansClusterOptions
+            {
+                Neo4j = new TestOrleansClusterNeo4jOptions
+                {
+                    Uri = _testDatabaseContainer.ConnectionString,
+                    Username = _testDatabaseContainer.Username,
+                    Password = _testDatabaseContainer.Password,
+                    Database = _testDatabaseContainer.Database
+                }
+            };
+            await _testCluster.StartAsync(options);
         }
 
         [Test]
@@ -34,7 +43,7 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
         public async Task TearDownAsync()
         {
             await _testCluster.ShutdownAsync();
-            await _testContainers.DestroyNeo4jContainerAsync();
+            await _testDatabaseContainer.ShutdownAsync();
         }
     }
 }
