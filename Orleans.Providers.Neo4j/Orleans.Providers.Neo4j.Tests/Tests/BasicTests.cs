@@ -15,7 +15,7 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
             _testCluster = new TestOrleansCluster();
             _testContainers = new TestContainers();
             _testDb = new TestDb();
-            await _testContainers.CreateNeo4jContainerAsync();
+            await _testContainers.CreateNeo4jContainerAsync(); ;
             await _testDb.Connect();
             await _testCluster.BuildAsync();
         }
@@ -28,6 +28,13 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
 
             var title = await nicholasCage.GetName();
             title.ShouldBe("Nicholas Cage");
+        }
+
+        [OneTimeTearDown]
+        public async Task TearDownAsync()
+        {
+            await _testCluster.ShutdownAsync();
+            await _testContainers.DestroyNeo4jContainerAsync();
         }
     }
 }
