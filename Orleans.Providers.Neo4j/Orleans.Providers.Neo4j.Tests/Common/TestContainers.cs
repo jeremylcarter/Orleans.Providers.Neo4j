@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Builders;
+﻿using Docker.DotNet.Models;
+using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 
 namespace Orleans.Providers.Neo4j.Tests.Common
@@ -23,10 +24,28 @@ namespace Orleans.Providers.Neo4j.Tests.Common
 
             // Start the container.
             await _container.StartAsync();
+            var log = await _container.GetLogsAsync();
+            await WaitForLogMessageAsync("Started");
         }
         public async Task DestroyNeo4jContainerAsync()
         {
             await _container.StopAsync();
+        }
+
+        private async Task WaitForLogMessageAsync(string targetMessage)
+        {
+            while (true)
+            {
+                var log = await _container.GetLogsAsync();
+
+                if (log.ToString().Contains(targetMessage))
+                {
+                    Console.WriteLine($"Found the target message: {targetMessage}");
+                    break;
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
         }
     }
 }
