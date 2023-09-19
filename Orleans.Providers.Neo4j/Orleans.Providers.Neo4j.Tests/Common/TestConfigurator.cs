@@ -19,12 +19,12 @@ namespace Orleans.Providers.Neo4j.Tests.Common
             siloBuilder.AddStreaming();
             siloBuilder.AddNeo4jGrainStorageAsDefault(siloBuilder =>
             {
-                // This is just a sandbox Neo4j instance, so no worries about the credentials being public
-                // It is destroyed and recreated every 24 hours
-                siloBuilder.Uri = "bolt://54.166.181.64:7687";
+                // This is just a neo4j container that is thrown away at the end of each test, so no worries about the credentials being public
+                // It is destroyed and recreated in each test run
+                siloBuilder.Uri = "bolt://localhost:7687";
                 siloBuilder.Database = "neo4j";
-                siloBuilder.Username = "neo4j";
-                siloBuilder.Password = "strip-furnace-gages";
+                siloBuilder.Username = TestContainers.dbUsername;
+                siloBuilder.Password = TestContainers.dbPassword;
             });
         }
     }
