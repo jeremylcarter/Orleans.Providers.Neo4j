@@ -35,10 +35,13 @@ namespace Orleans.Providers.Neo4j.Tests.Common
                 testDatabaseContainer = new TestDatabaseContainer();
                 await testDatabaseContainer.CreateAsync();
                 options.CreateContainer = true;
-                options.Neo4j.Uri = testDatabaseContainer.ConnectionString;
-                options.Neo4j.Username = testDatabaseContainer.Username;
-                options.Neo4j.Password = testDatabaseContainer.Password;
-                options.Neo4j.Database = testDatabaseContainer.Database;
+                options.Neo4j = new TestOrleansClusterNeo4jOptions
+                {
+                    Uri = testDatabaseContainer.ConnectionString,
+                    Username = testDatabaseContainer.Username,
+                    Password = testDatabaseContainer.Password,
+                    Database = testDatabaseContainer.Database
+                };
             }
             else if (configuration.GetValue<bool>("Neo4j:Enabled", false))
             {
@@ -149,9 +152,20 @@ namespace Orleans.Providers.Neo4j.Tests.Common
 
         public async Task ShutdownAsync()
         {
-            var managementGrain = Client.GetGrain<IManagementGrain>(0);
-            await managementGrain.ForceActivationCollection(new TimeSpan(0));
-            await Host.StopAsync();
+            // If an Orleans client was created, then force all grains to deactivate
+            if (Client != null)
+            {
+                var managementGrain = Client.GetGrain<IManagementGrain>(0);
+                await managementGrain.ForceActivationCollection(new TimeSpan(0));
+            }
+
+            // If a host was created, shut it down
+            if (Host != null)
+            {
+                await Host.StopAsync();
+            }
+
+            // If a test database container was created, shut it down
             if (testDatabaseContainer != null)
             {
                 await testDatabaseContainer?.ShutdownAsync();

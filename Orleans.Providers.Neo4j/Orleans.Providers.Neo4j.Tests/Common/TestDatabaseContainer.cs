@@ -23,7 +23,7 @@ namespace Orleans.Providers.Neo4j.Tests.Common
             Port = port;
         }
 
-        public async Task CreateAsync(string version = "5.12.0-community", string containerName = "neo4j-test")
+        public async Task CreateAsync(string version = "5.12.0-community")
         {
             Container = new ContainerBuilder()
             .WithImage($"neo4j:{version}")
@@ -38,7 +38,6 @@ namespace Orleans.Providers.Neo4j.Tests.Common
 
             // Start the container.
             await Container.StartAsync();
-            var log = await Container.GetLogsAsync();
             await WaitForLogMessageAsync("Started");
 
             var connectionString = $"bolt://{Container.Hostname}:{Port}";
