@@ -27,22 +27,28 @@ namespace Orleans.Providers.Neo4j.Storage
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
 
             var grainKey = _keyGenerator.Generate(grainId);
-            var result = await session.RunAsync($"MATCH (a:{grainType}) WHERE a.id = '{grainKey}' RETURN a.{_fieldState} AS state");
+            var result = await session.RunAsync($"MATCH (a:{grainType}) WHERE a.id = '{grainKey}' RETURN a");
 
             // Get the first record (or null)
             var cursor = await result.FetchAsync();
 
             if (cursor && result.Current != null)
             {
-                var jsonState = result.Current[_fieldState].As<string>();
-
-                var deserializedState = JsonSerializer.Deserialize<T>(jsonState);
-                if (deserializedState != null)
+                // If the current record is a Node and it has a state property, deserialize it
+                // It will return as the a field
+                var node = result.Current["a"].As<INode>();
+                if (node != null)
                 {
-                    grainState.State = deserializedState;
+                    var jsonState = node[_fieldState].As<string>();
+
+                    var deserializedState = JsonSerializer.Deserialize<T>(jsonState);
+                    if (deserializedState != null)
+                    {
+                        grainState.State = deserializedState;
+                    }
+                    grainState.RecordExists = true;
+                    grainState.ETag = node[_fieldEtag].As<string>();
                 }
-                grainState.RecordExists = true;
-                grainState.ETag = result.Current[_fieldEtag].As<string>();
             }
         }
 
@@ -55,7 +61,7 @@ namespace Orleans.Providers.Neo4j.Storage
             var jsonState = JsonSerializer.Serialize(grainState.State);
 
             var currentETag = grainState.ETag;
-            var newETag = Guid.NewGuid().ToString();
+            var newETag = Neo4jETagGenerator.Generate();
 
             grainState.RecordExists = true;
 
@@ -64,8 +70,8 @@ namespace Orleans.Providers.Neo4j.Storage
                 // It's the first write, create the node with state and initial ETag
                 await session.RunAsync($@"
                     MERGE (a:{grainType} {{ id: '{grainKey}' }})
-                    ON CREATE SET a.{_fieldState} = $state, a.{_fieldEtag} = '{newETag}'
-                ", new { state = jsonState });
+                    ON CREATE SET a.{_fieldState} = $state, a.{_fieldEtag} = $eTag'
+                ", new { state = jsonState, eTag = newETag });
             }
             else
             {
@@ -73,9 +79,9 @@ namespace Orleans.Providers.Neo4j.Storage
                 // Notice we are matching the id and the ETag for idempotency purposes
                 var result = await session.RunAsync($@"
                     MATCH (a:{grainType} {{ id: '{grainKey}', {_fieldEtag}: '{currentETag}' }})
-                    SET a.{_fieldState} = $state, a.eTag = '{newETag}'
+                    SET a.{_fieldState} = $state, a.{_fieldEtag} = $eTag
                     RETURN a
-                ", new { state = jsonState });
+                ", new { state = jsonState, eTag = newETag });
             }
 
             grainState.ETag = newETag;
