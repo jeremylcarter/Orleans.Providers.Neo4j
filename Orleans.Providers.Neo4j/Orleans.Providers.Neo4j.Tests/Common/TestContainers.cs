@@ -13,6 +13,7 @@ namespace Orleans.Providers.Neo4j.Tests.Common
             _container = new ContainerBuilder()
                 .WithImage("neo4j")
                 .WithExposedPort("7687")
+                .WithPortBinding("7687", "7687")
                 .WithEnvironment("NEO4J_AUTH", $"{dbUsername}/{dbPassword}")
                 .WithEnvironment("NEO4J_dbms_memory_pagecache_size", "1G")
                 .WithEnvironment("NEO4J_dbms_memory_heap_max__size", "1G")
@@ -21,9 +22,7 @@ namespace Orleans.Providers.Neo4j.Tests.Common
                 .Build();
 
             // Start the container.
-            await _container.StartAsync()
-                .ConfigureAwait(false);
-
+            await _container.StartAsync();
         }
         public async Task DestroyNeo4jContainerAsync()
         {
