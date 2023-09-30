@@ -1,5 +1,6 @@
 ﻿using Neo4j.Driver;
 using Orleans.Providers.Neo4j.Common;
+using Orleans.Providers.Neo4j.Extensions;
 using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace Orleans.Providers.Neo4j.Storage
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
+        private readonly Dictionary<string, Neo4jStateTypeMetadata> _metadata = new Dictionary<string, Neo4jStateTypeMetadata>();
 
         public Neo4jGrainStorageClient(Neo4jGrainStorageOptions options)
         {
@@ -49,25 +51,30 @@ namespace Orleans.Providers.Neo4j.Storage
                 var node = result.Current["a"].As<INode>();
                 if (node != null)
                 {
-                    // If the state object is IConvertableState, use the ConvertFrom method
-                    // Otherwise use the JsonSerializer which uses a single state property
-                    if (grainState.State is IConvertableState<IReadOnlyDictionary<string, object>> convertableState)
-                    {
-                        convertableState.ConvertFrom(node.Properties);
-                    }
-                    else
-                    {
-                        var jsonState = node[_fieldState].As<string>();
-                        var deserializedState = JsonSerializer.Deserialize<T>(jsonState, _jsonOptions);
-                        if (deserializedState != null)
-                        {
-                            grainState.State = deserializedState;
-                        }
-                    }                   
-                    grainState.RecordExists = true;
-                    grainState.ETag = node[_fieldEtag].As<string>();
+                    ConvertInto(node, grainState);
                 }
             }
+        }
+
+        private void ConvertInto<T>(INode node, IGrainState<T> grainState)
+        {
+            // If the state object is IConvertableState, use the ConvertFrom method
+            // Otherwise use the JsonSerializer which uses a single state property
+            if (grainState.State is IConvertableState<IReadOnlyDictionary<string, object>> convertableState)
+            {
+                convertableState.ConvertFrom(node.Properties);
+            }
+            else
+            {
+                var jsonState = node[_fieldState].As<string>();
+                var deserializedState = JsonSerializer.Deserialize<T>(jsonState, _jsonOptions);
+                if (deserializedState != null)
+                {
+                    grainState.State = deserializedState;
+                }
+            }
+            grainState.RecordExists = true;
+            grainState.ETag = node[_fieldEtag].As<string>();
         }
 
         public async Task WriteStateAsync<T>(string grainType, string grainKey, IGrainState<T> grainState)
@@ -80,7 +87,7 @@ namespace Orleans.Providers.Neo4j.Storage
             grainState.RecordExists = true;
 
             // Convert the state to a dictionary of properties
-            var properties = ConvertToProperties(grainState);
+            var parameters = ConvertToParameters(grainState, newETag);
 
             if (string.IsNullOrEmpty(currentETag))
             {
@@ -88,7 +95,7 @@ namespace Orleans.Providers.Neo4j.Storage
                 await session.RunAsync($@"
                     MERGE (n:{grainType} {{ id: '{grainKey}' }})
                     ON CREATE SET n += $properties, n.{_fieldEtag} = $eTag
-                ", new { properties, eTag = newETag });
+                ", parameters);
             }
             else
             {
@@ -98,25 +105,32 @@ namespace Orleans.Providers.Neo4j.Storage
                     MATCH (n:{grainType} {{ id: '{grainKey}', {_fieldEtag}: '{currentETag}' }})
                     SET n += $properties, n.{_fieldEtag} = $eTag
                     RETURN n
-                ", new { properties, eTag = newETag });
+                ", parameters);
             }
 
             grainState.ETag = newETag;
         }
 
-        private IReadOnlyDictionary<string, object> ConvertToProperties<T>(IGrainState<T> grainState)
-        {
+        private IReadOnlyDictionary<string, object> ConvertToParameters<T>(IGrainState<T> grainState, string eTag) {
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "eTag", eTag }
+            };
+
             // If the state is IConvertableState, use the ConvertTo method  
             // Otherwise use the JsonSerializer to produce a single state property
             if (grainState.State is IConvertableState<IReadOnlyDictionary<string, object>> convertableState)
             {
-                return convertableState.ConvertTo();
+                parameters.Add("properties", convertableState.ConvertTo());
             }
             else
             {
                 var jsonState = JsonSerializer.Serialize(grainState.State, _jsonOptions);
-                return new Dictionary<string, object> { { "state", jsonState } };
+                parameters.Add("properties", new Dictionary<string, object> { { "state", jsonState } });
             }
+
+            return parameters;
         }
 
         public async Task ClearStateAsync<T>(string grainType, string grainKey, IGrainState<T> grainState)
@@ -133,5 +147,10 @@ namespace Orleans.Providers.Neo4j.Storage
                 await _driver.DisposeAsync();
             }
         }
+    }
+
+    public class Neo4jStateTypeMetadata
+    {
+        public Type StateType { get; set; }
     }
 }
