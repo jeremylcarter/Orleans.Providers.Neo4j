@@ -113,11 +113,13 @@ namespace Orleans.Providers.Neo4j.Storage
 
         private IReadOnlyDictionary<string, object> ConvertToParameters<T>(IGrainState<T> grainState, string eTag) {
 
+            // All parameters must include an eTag
             var parameters = new Dictionary<string, object>
             {
                 { "eTag", eTag }
             };
 
+            // The properties array spreads out into the Node as a KV pair.
             // If the state is IConvertableState, use the ConvertTo method  
             // Otherwise use the JsonSerializer to produce a single state property
             if (grainState.State is IConvertableState<IReadOnlyDictionary<string, object>> convertableState)
