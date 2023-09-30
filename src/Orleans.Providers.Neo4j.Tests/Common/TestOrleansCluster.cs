@@ -71,6 +71,12 @@ namespace Orleans.Providers.Neo4j.Tests.Common
                 {
                     config.AddJsonFile("appsettings.json", optional: true);
                 })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    // Create a database context for other tests to use
+                    var neo4jContext = Neo4jContextFactory.Create(options.Neo4j.Uri, options.Neo4j.Username, options.Neo4j.Password);
+                    services.AddSingleton(neo4jContext);
+                })
                 .UseOrleans((hostContext, siloBuilder) =>
                 {
                     siloBuilder

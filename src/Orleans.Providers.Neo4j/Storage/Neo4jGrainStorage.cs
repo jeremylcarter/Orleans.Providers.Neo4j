@@ -24,6 +24,10 @@ namespace Orleans.Providers.Neo4j.Storage
             _options = options;
             _driver = GraphDatabase.Driver(options.Uri, AuthTokens.Basic(options.Username, options.Password));
             _generator = options.Generator ?? new Neo4jGrainStorageGenerator();
+            if (options.PropertyNameStyle == PropertyNameStyle.None)
+            {
+                _jsonOptions.PropertyNamingPolicy = null;
+            }
         }
 
         public async Task ReadStateAsync<T>(string stateName, GrainId grainId, IGrainState<T> grainState)
