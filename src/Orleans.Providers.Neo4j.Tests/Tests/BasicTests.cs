@@ -14,9 +14,14 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
         {
             _testCluster = new TestOrleansCluster();
             await _testCluster.StartAsync();
+
+            // Delete any nodes that may have been created by previous tests
+            var context = _testCluster.GetService<INeo4jContext>();
+            var session = context.AsyncSession();
+            await session.RunAsync("MATCH (n:Actor {id: 'nickolasCage'}) DETACH DELETE n");
         }
 
-        [Test]
+        [Test, Order(1)]
         public async Task SimpleSetAndGet()
         {
             var nicholasCage = _testCluster.GetGrain<IActorGrain>("nickolasCage");
@@ -26,7 +31,7 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
             title.ShouldBe("Nicholas Cage");
         }
 
-        [Test]
+        [Test, Order(2)]
         public async Task CheckTheNodeExists()
         {
             var context = _testCluster.GetService<INeo4jContext>();
@@ -36,10 +41,8 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
             result.Current.ShouldNotBeNull();
             var node = result.Current.Values["n"] as INode;
             node.ShouldNotBeNull();
-            node.Properties["state"].As<string>().ShouldNotBeNullOrEmpty();
-            var state = node.Properties["state"].As<string>();
-            var jsonState = JObject.Parse(state);
-            jsonState["name"].Value<string>().ShouldBe("Nicholas Cage");
+            node.Properties["name"].As<string>().ShouldNotBeNullOrEmpty();
+            node.Properties["name"].As<string>().ShouldBe("Nicholas Cage");
         }
 
         [OneTimeTearDown]
