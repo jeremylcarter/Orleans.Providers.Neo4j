@@ -8,6 +8,7 @@
         public required string Password { get; set; }
         public required PropertyNameStyle PropertyNameStyle = PropertyNameStyle.CamelCase;
         public INeo4JGrainStorageGenerator Generator { get; set; }
+        public INeo4jGrainStorageClient StorageClient { get; set; }
     }
 
     public enum PropertyNameStyle

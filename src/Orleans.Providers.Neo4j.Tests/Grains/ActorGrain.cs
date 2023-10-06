@@ -1,6 +1,5 @@
 ﻿using Neo4j.Driver;
 using Orleans.Providers.Neo4j.Common;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Orleans.Providers.Neo4j.Tests.Grains
 {
@@ -21,9 +20,7 @@ namespace Orleans.Providers.Neo4j.Tests.Grains
     [Serializable]
     public class ActorGrainState : IConvertableState<IReadOnlyDictionary<string, object>>
     {
-        [Property("name")]
         public string Name { get; set; }
-        [NotMapped]
         public bool IgnoreThis { get; set; }
 
         public void ConvertFrom(IReadOnlyDictionary<string, object> from)

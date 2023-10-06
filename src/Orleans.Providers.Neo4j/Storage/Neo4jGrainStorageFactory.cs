@@ -6,7 +6,7 @@ namespace Orleans.Providers.Neo4j.Storage
 {
     internal static class Neo4jGrainStorageFactory
     {
-        internal static IGrainStorage CreateSimpleGrainStorage(IServiceProvider services, string name)
+        internal static IGrainStorage CreateGrainStorage(IServiceProvider services, string name)
         {
             var optionsMonitor = services.GetRequiredService<IOptionsMonitor<Neo4jGrainStorageOptions>>();
             var options = optionsMonitor.Get(name);

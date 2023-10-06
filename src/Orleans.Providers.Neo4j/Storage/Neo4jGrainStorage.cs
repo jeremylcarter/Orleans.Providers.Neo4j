@@ -1,7 +1,5 @@
-﻿using Neo4j.Driver;
-using Orleans.Runtime;
+﻿using Orleans.Runtime;
 using Orleans.Storage;
-using System.Text.Json;
 
 namespace Orleans.Providers.Neo4j.Storage
 {
@@ -10,14 +8,14 @@ namespace Orleans.Providers.Neo4j.Storage
         private readonly INeo4JGrainStorageGenerator _generator;
         private readonly string _storageName;
         private readonly Neo4jGrainStorageOptions _options;
-        private readonly Neo4jGrainStorageClient _client;
+        private readonly INeo4jGrainStorageClient _client;
 
         public Neo4jSimpleGrainStorage(string storageName, Neo4jGrainStorageOptions options)
         {
             _storageName = storageName;
             _options = options;
             _generator = options.Generator ?? new Neo4jGrainStorageGenerator();
-            _client = new Neo4jGrainStorageClient(options);
+            _client = options.StorageClient ?? new Neo4jGrainStorageClient(options);
         }
 
         public async Task ReadStateAsync<T>(string stateName, GrainId grainId, IGrainState<T> grainState)

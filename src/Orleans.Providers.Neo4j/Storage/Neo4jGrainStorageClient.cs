@@ -1,21 +1,12 @@
 ﻿using Neo4j.Driver;
 using Orleans.Providers.Neo4j.Common;
-using Orleans.Providers.Neo4j.Extensions;
-using Orleans.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Orleans.Providers.Neo4j.Storage
 {
-    public class Neo4jGrainStorageClient
+    public class Neo4jGrainStorageClient : INeo4jGrainStorageClient
     {
         private readonly IDriver _driver;
-        private readonly INeo4JGrainStorageGenerator _generator;
         private const string _fieldState = "state";
         private const string _fieldEtag = "eTag";
         private readonly Neo4jGrainStorageOptions _options;
@@ -29,7 +20,6 @@ namespace Orleans.Providers.Neo4j.Storage
         {
             _options = options;
             _driver = GraphDatabase.Driver(options.Uri, AuthTokens.Basic(options.Username, options.Password));
-            _generator = options.Generator ?? new Neo4jGrainStorageGenerator();
             if (options.PropertyNameStyle == PropertyNameStyle.None)
             {
                 _jsonOptions.PropertyNamingPolicy = null;
@@ -111,7 +101,8 @@ namespace Orleans.Providers.Neo4j.Storage
             grainState.ETag = newETag;
         }
 
-        private IReadOnlyDictionary<string, object> ConvertToParameters<T>(IGrainState<T> grainState, string eTag) {
+        private IReadOnlyDictionary<string, object> ConvertToParameters<T>(IGrainState<T> grainState, string eTag)
+        {
 
             // All parameters must include an eTag
             var parameters = new Dictionary<string, object>
