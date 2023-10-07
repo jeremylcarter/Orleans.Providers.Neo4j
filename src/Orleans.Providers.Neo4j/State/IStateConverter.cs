@@ -7,6 +7,7 @@ public interface IStateConverter<TConvertFrom, TConvertTo>
 }
 
 public interface INeo4jStateConverter { }
-public interface INeo4jStateConverter<TState> : INeo4jStateConverter, IStateConverter<TState, IReadOnlyDictionary<string, object>>
+public interface INeo4jStateConverter<TState> :
+    INeo4jStateConverter, IStateConverter<TState, IReadOnlyDictionary<string, object>>
 {
 }

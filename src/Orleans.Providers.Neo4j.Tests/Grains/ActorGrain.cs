@@ -1,51 +1,81 @@
 ﻿using Neo4j.Driver;
 using Orleans.Providers.Neo4j.State;
 
-namespace Orleans.Providers.Neo4j.Tests.Grains
+namespace Orleans.Providers.Neo4j.Tests.Grains;
+
+public class ActorGrain : Grain<ActorGrainState>, IActorGrain
 {
-    public class ActorGrain : Grain<ActorGrainState>, IActorGrain
+    public Task SetName(string name)
     {
-        public ValueTask<string> GetName()
-        {
-            return ValueTask.FromResult(State.Name);
-        }
-
-        public Task SetName(string name)
-        {
-            State.Name = name;
-            return WriteStateAsync();
-        }
+        State.Name = name;
+        return WriteStateAsync();
+    }
+    public ValueTask<string> GetName()
+    {
+        return ValueTask.FromResult(State.Name);
     }
 
-    [Serializable]
-    public class ActorGrainState
+    public Task SetDateOfBirth(DateTime dateTime)
     {
-        public string Name { get; set; }
-        public bool IgnoreThis { get; set; }
+        State.DateOfBirth = dateTime;
+        return WriteStateAsync();
     }
 
-    public class ActorGrainStateConverter : INeo4jStateConverter<ActorGrainState>
+    public ValueTask<DateTime?> GetDateOfBirth()
     {
-        public ActorGrainState ConvertFrom(IReadOnlyDictionary<string, object> convertFrom)
-        {
-            return new ActorGrainState()
-            {
-                Name = convertFrom["name"].As<string>(),
-            };
-        }
+        return ValueTask.FromResult(State.DateOfBirth);
+    }
 
-        public IReadOnlyDictionary<string, object> ConvertTo(ActorGrainState from)
-        {
-            return new Dictionary<string, object>
-           {
-                { "name", from.Name }
-           };
-        }
+    public Task AddMovie(string movieId)
+    {
+        State.Movies ??= new List<string>();
+        State.Movies.Add(movieId);
+        return WriteStateAsync();
+    }
+
+    public Task<List<string>> GetMovies()
+    {
+        return Task.FromResult(State.Movies);
     }
 }
 
-public interface IActorGrain : IGrainWithStringKey
+[Serializable]
+public class ActorGrainState
 {
-    Task SetName(string name);
-    ValueTask<string> GetName();
+    public string Name { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public bool IgnoreThis { get; set; }
+
+    [Neo4jRelationship("ACTED_IN")]
+    public List<string> Movies { get; set; }
+}
+
+public class Neo4jRelationshipAttribute : Attribute
+{
+    public Neo4jRelationshipAttribute(string relationshipName = "IS_CHILD_OF")
+    {
+        RelationshipName = relationshipName;
+    }
+    public string RelationshipName { get; }
+}
+
+public class ActorGrainStateConverter : INeo4jStateConverter<ActorGrainState>
+{
+    public ActorGrainState ConvertFrom(IReadOnlyDictionary<string, object> convertFrom)
+    {
+        return new ActorGrainState()
+        {
+            Name = convertFrom["name"].As<string>(),
+            DateOfBirth = convertFrom["dateOfBirth"].As<DateTime?>(),
+        };
+    }
+
+    public IReadOnlyDictionary<string, object> ConvertTo(ActorGrainState from)
+    {
+        return new Dictionary<string, object>
+       {
+            { "name", from.Name },
+            { "dateOfBirth", from.DateOfBirth },
+       };
+    }
 }

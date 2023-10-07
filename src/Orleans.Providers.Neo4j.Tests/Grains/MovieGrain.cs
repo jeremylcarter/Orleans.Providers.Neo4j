@@ -1,29 +1,41 @@
-﻿namespace Orleans.Providers.Neo4j.Tests.Grains
+﻿namespace Orleans.Providers.Neo4j.Tests.Grains;
+
+public class MovieGrain : Grain<MovieGrainState>, IMovieGrain
 {
-    public class MovieGrain : Grain<MovieGrainState>, IMovieGrain
+    public ValueTask<string> GetTitle()
     {
-        public ValueTask<string> GetTitle()
-        {
-            return ValueTask.FromResult(State.Title);
-        }
-
-        public Task SetTitle(string title)
-        {
-            State.Title = title;
-            return WriteStateAsync();
-        }
+        return ValueTask.FromResult(State.Title);
     }
 
-    [Serializable]
-    public class MovieGrainState
+    public Task SetTitle(string title)
     {
-        [Property("title")]
-        public string Title { get; set; }
+        State.Title = title;
+        return WriteStateAsync();
     }
 
-    public interface IMovieGrain : IGrainWithIntegerKey
+    public ValueTask<int?> GetYear()
     {
-        Task SetTitle(string title);
-        ValueTask<string> GetTitle();
+        return ValueTask.FromResult(State.Year);
     }
+
+    public Task SetYear(int year)
+    {
+        State.Year = year;
+        return WriteStateAsync();
+    }
+}
+
+[Serializable]
+public class MovieGrainState
+{
+    public string Title { get; set; }
+    public int? Year { get; set; }
+}
+
+public interface IMovieGrain : IGrainWithStringKey
+{
+    Task SetTitle(string title);
+    ValueTask<string> GetTitle();
+    Task SetYear(int year);
+    ValueTask<int?> GetYear();
 }
