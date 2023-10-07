@@ -7,12 +7,14 @@ namespace Orleans.Providers.Neo4j.Storage
         private readonly IDriver _driver;
         private readonly Neo4jGrainStorageOptions _options;
         private readonly Neo4jGrainStateConverter _converter;
+        private readonly INeo4jGrainStorageETagGenerator _eTagGenerator;
 
         public Neo4jGrainStorageClient(Neo4jGrainStorageOptions options)
         {
             _options = options;
             _driver = GraphDatabase.Driver(options.Uri, AuthTokens.Basic(options.Username, options.Password));
             _converter = new Neo4jGrainStateConverter(_options);
+            _eTagGenerator = _options.ETagGenerator ?? new Neo4jGrainStorageETagGenerator();
             if (_options.StateConverters != null)
             {
                 _converter.RegisterConverters(_options.StateConverters);
@@ -44,7 +46,7 @@ namespace Orleans.Providers.Neo4j.Storage
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
 
             var currentETag = grainState.ETag;
-            var newETag = Neo4jETagGenerator.Generate();
+            var newETag = _eTagGenerator.Generate(grainType, grainKey, currentETag);
 
             grainState.RecordExists = true;
 

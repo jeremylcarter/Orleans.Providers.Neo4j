@@ -12,14 +12,9 @@ namespace Orleans.Providers.Neo4j.Storage
         public string StatePropertyName { get; set; } = "state";
         public string ETagPropertyName { get; set; } = "eTag";
         public JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions();
-        public INeo4JGrainStorageGenerator Generator { get; set; }
+        public INeo4jGrainStorageKeyGenerator KeyGenerator { get; set; }
+        public INeo4jGrainStorageETagGenerator ETagGenerator { get; set; }
         public INeo4jGrainStorageClient StorageClient { get; set; }
         public IDictionary<Type, INeo4jStateConverter> StateConverters { get; internal set; }
-    }
-
-    public enum PropertyNameStyle
-    {
-        CamelCase,
-        None,
     }
 }

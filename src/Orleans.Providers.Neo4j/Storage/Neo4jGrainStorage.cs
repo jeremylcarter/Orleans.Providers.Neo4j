@@ -5,7 +5,7 @@ namespace Orleans.Providers.Neo4j.Storage
 {
     internal class Neo4jSimpleGrainStorage : IGrainStorage, ILifecycleParticipant<ISiloLifecycle>
     {
-        private readonly INeo4JGrainStorageGenerator _generator;
+        private readonly INeo4jGrainStorageKeyGenerator _generator;
         private readonly string _storageName;
         private readonly Neo4jGrainStorageOptions _options;
         private readonly INeo4jGrainStorageClient _client;
@@ -14,7 +14,7 @@ namespace Orleans.Providers.Neo4j.Storage
         {
             _storageName = storageName;
             _options = options;
-            _generator = options.Generator ?? new Neo4jGrainStorageGenerator();
+            _generator = options.KeyGenerator ?? new Neo4jGrainStorageKeyGenerator();
             _client = options.StorageClient ?? new Neo4jGrainStorageClient(options);
         }
 
