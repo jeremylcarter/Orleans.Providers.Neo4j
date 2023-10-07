@@ -156,13 +156,20 @@ namespace Orleans.Providers.Neo4j.Tests.Common
             return GrainFactory!.GetGrain<T>(id);
         }
 
+        public async Task DeactivateAllGrains()
+        {
+            var managementGrain = Client.GetGrain<IManagementGrain>(0);
+            await managementGrain.ForceActivationCollection(new TimeSpan(0));
+            // Sleep for 1 second to allow all grains to deactivate
+            await Task.Delay(1000);
+        }
+
         public async Task ShutdownAsync()
         {
             // If an Orleans client was created, then force all grains to deactivate
             if (Client != null)
             {
-                var managementGrain = Client.GetGrain<IManagementGrain>(0);
-                await managementGrain.ForceActivationCollection(new TimeSpan(0));
+                await DeactivateAllGrains();
             }
 
             // If a host was created, shut it down

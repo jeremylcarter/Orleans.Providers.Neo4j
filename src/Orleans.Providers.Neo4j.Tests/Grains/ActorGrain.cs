@@ -1,5 +1,5 @@
 ﻿using Neo4j.Driver;
-using Orleans.Providers.Neo4j.Common;
+using Orleans.Providers.Neo4j.State;
 
 namespace Orleans.Providers.Neo4j.Tests.Grains
 {
@@ -18,28 +18,34 @@ namespace Orleans.Providers.Neo4j.Tests.Grains
     }
 
     [Serializable]
-    public class ActorGrainState : IConvertableState<IReadOnlyDictionary<string, object>>
+    public class ActorGrainState
     {
         public string Name { get; set; }
         public bool IgnoreThis { get; set; }
+    }
 
-        public void ConvertFrom(IReadOnlyDictionary<string, object> from)
+    public class ActorGrainStateConverter : INeo4jStateConverter<ActorGrainState>
+    {
+        public ActorGrainState ConvertFrom(IReadOnlyDictionary<string, object> convertFrom)
         {
-            Name = from["name"].As<string>();
-        }
-
-        public IReadOnlyDictionary<string, object> ConvertTo()
-        {
-            return new Dictionary<string, object>
+            return new ActorGrainState()
             {
-                { "name", Name }
+                Name = convertFrom["name"].As<string>(),
             };
         }
-    }
 
-    public interface IActorGrain : IGrainWithStringKey
-    {
-        Task SetName(string name);
-        ValueTask<string> GetName();
+        public IReadOnlyDictionary<string, object> ConvertTo(ActorGrainState from)
+        {
+            return new Dictionary<string, object>
+           {
+                { "name", from.Name }
+           };
+        }
     }
+}
+
+public interface IActorGrain : IGrainWithStringKey
+{
+    Task SetName(string name);
+    ValueTask<string> GetName();
 }

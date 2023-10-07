@@ -1,7 +1,5 @@
 using Neo4j.Driver;
-using Newtonsoft.Json.Linq;
 using Orleans.Providers.Neo4j.Tests.Common;
-using Orleans.Providers.Neo4j.Tests.Grains;
 
 namespace Orleans.Providers.Neo4j.Tests.Tests
 {
@@ -27,6 +25,17 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
             var nicholasCage = _testCluster.GetGrain<IActorGrain>("nickolasCage");
             await nicholasCage.SetName("Nicholas Cage");
 
+            var title = await nicholasCage.GetName();
+            title.ShouldBe("Nicholas Cage");
+        }
+
+
+        [Test, Order(1)]
+        public async Task SimpleSetAndLoad()
+        {
+            await _testCluster.DeactivateAllGrains();
+
+            var nicholasCage = _testCluster.GetGrain<IActorGrain>("nickolasCage");
             var title = await nicholasCage.GetName();
             title.ShouldBe("Nicholas Cage");
         }

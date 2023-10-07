@@ -1,4 +1,4 @@
-﻿namespace Orleans.Providers.Neo4j.Common
+﻿namespace Orleans.Providers.Neo4j.State
 {
     public interface INodeState
     {
