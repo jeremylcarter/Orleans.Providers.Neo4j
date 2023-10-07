@@ -8,18 +8,16 @@ namespace Orleans.Providers.Neo4j.Storage
     {
         private readonly Neo4jGrainStorageOptions _options;
         private readonly Dictionary<Type, INeo4jStateConverter> _conveters;
-        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public Neo4jGrainStateConverter(Neo4jGrainStorageOptions options)
         {
             _options = options;
-            if (options.PropertyNameStyle == PropertyNameStyle.None)
+
+            _jsonOptions = _options.JsonSerializerOptions ?? new JsonSerializerOptions
             {
-                _jsonOptions.PropertyNamingPolicy = null;
-            }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
             _conveters = new Dictionary<Type, INeo4jStateConverter>();
         }
 

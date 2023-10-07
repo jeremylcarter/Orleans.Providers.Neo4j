@@ -1,4 +1,5 @@
 ﻿using Orleans.Providers.Neo4j.State;
+using System.Text.Json;
 
 namespace Orleans.Providers.Neo4j.Storage
 {
@@ -10,7 +11,7 @@ namespace Orleans.Providers.Neo4j.Storage
         public required string Password { get; set; }
         public string StatePropertyName { get; set; } = "state";
         public string ETagPropertyName { get; set; } = "eTag";
-        public required PropertyNameStyle PropertyNameStyle = PropertyNameStyle.CamelCase;
+        public JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions();
         public INeo4JGrainStorageGenerator Generator { get; set; }
         public INeo4jGrainStorageClient StorageClient { get; set; }
         public IDictionary<Type, INeo4jStateConverter> StateConverters { get; internal set; }
