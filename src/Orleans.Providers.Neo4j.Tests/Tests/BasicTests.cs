@@ -25,22 +25,22 @@ namespace Orleans.Providers.Neo4j.Tests.Tests
             var nicholasCage = _testCluster.GetGrain<IActorGrain>("nickolasCage");
             await nicholasCage.SetName("Nicholas Cage");
 
-            var title = await nicholasCage.GetName();
-            title.ShouldBe("Nicholas Cage");
+            var name = await nicholasCage.GetName();
+            name.ShouldBe("Nicholas Cage");
         }
 
 
-        [Test, Order(1)]
+        [Test, Order(2)]
         public async Task SimpleSetAndLoad()
         {
             await _testCluster.DeactivateAllGrains();
 
             var nicholasCage = _testCluster.GetGrain<IActorGrain>("nickolasCage");
-            var title = await nicholasCage.GetName();
-            title.ShouldBe("Nicholas Cage");
+            var name = await nicholasCage.GetName();
+            name.ShouldBe("Nicholas Cage");
         }
 
-        [Test, Order(2)]
+        [Test, Order(3)]
         public async Task CheckTheNodeExists()
         {
             var context = _testCluster.GetService<INeo4jContext>();
