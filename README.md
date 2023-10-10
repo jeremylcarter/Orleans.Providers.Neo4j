@@ -18,7 +18,7 @@ the entire state object is serialized as JSON and stored inside the `state` prop
 
 For example:
 
-```
+```csharp
 public class MyState
 {
 	public string Name { get; set; }
@@ -39,7 +39,7 @@ Every state object is flattened out into a dictionary by creating a `INeo4jState
 
 For example:
 
-```
+```csharp
 public class MyState
 {
 	public string Name { get; set; }
@@ -98,7 +98,7 @@ Setup:
 
 Simply add `AddNeo4jGrainStorage` or `AddNeo4jGrainStorageAsDefault` on your builder configuration.
 
-```
+```csharp
 builder.AddNeo4jGrainStorageAsDefault(storageOptions =>
 {
     storageOptions.Uri = "127.0.0.1";
