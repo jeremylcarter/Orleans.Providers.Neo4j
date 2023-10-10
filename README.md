@@ -1,5 +1,7 @@
 # Orleans.Providers.Neo4j
 
+[![NuGet version](https://badge.fury.io/nu/Orleans.Providers.Neo4j.svg)](https://badge.fury.io/nu/Orleans.Providers.Neo4j)
+
 A Neo4j implementation of the Orleans Providers. 
 
 This includes:
@@ -84,7 +86,8 @@ It lists the following options:
  * `Database` - The database to use. Defaults to `neo4j`.
  * `Username` - The username to use when connecting to the database. Defaults to `neo4j`.
  * `Password` - The password to use when connecting to the database. Defaults to `neo4j`.
- * `StatePropertyName` - The name of the property to store the state on. Defaults to `state`. * `ETagPropertyName` - The name of the property to store the eTag on. Defaults to `eTag`.
+ * `StatePropertyName` - The name of the property to store the state on. Defaults to `state`.
+ * `ETagPropertyName` - The name of the property to store the eTag on. Defaults to `eTag`.
  * `JsonSerializerOptions` - Override the default `JsonSerializerOptions` options.
  * `KeyGenerator` - Override how Keys/ID's are generated.
  * `ETagGenerator` - Override how eTags are generated.
