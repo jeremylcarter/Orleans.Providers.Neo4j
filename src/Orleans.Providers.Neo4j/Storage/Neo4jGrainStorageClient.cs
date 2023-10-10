@@ -24,7 +24,7 @@ namespace Orleans.Providers.Neo4j.Storage
         public async Task ReadStateAsync<T>(string grainType, string grainKey, IGrainState<T> grainState)
         {
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
-            var result = await session.RunAsync($"MATCH (a:{grainType}) WHERE a.id = '{grainKey}' RETURN a");
+            var result = await session.RunAsync($"MATCH (a:{grainType}) WHERE a.{_options.IdPropertyName} = '{grainKey}' RETURN a");
 
             // Get the first record (or null)
             var cursor = await result.FetchAsync();
@@ -57,7 +57,7 @@ namespace Orleans.Providers.Neo4j.Storage
             {
                 // It's the first write, create the node with state and initial ETag
                 await session.RunAsync($@"
-                    MERGE (n:{grainType} {{ id: '{grainKey}' }})
+                    MERGE (n:{grainType} {{ {_options.IdPropertyName}: '{grainKey}' }})
                     ON CREATE SET n += $properties, n.{_options.ETagPropertyName} = $eTag", parameters);
             }
             else
@@ -65,7 +65,7 @@ namespace Orleans.Providers.Neo4j.Storage
                 // Update the state and ETag for existing node
                 // Notice we are matching the id and the ETag for idempotency purposes
                 var result = await session.RunAsync($@"
-                    MATCH (n:{grainType} {{ id: '{grainKey}', {_options.ETagPropertyName}: '{currentETag}' }})
+                    MATCH (n:{grainType} {{ {_options.IdPropertyName}: '{grainKey}', {_options.ETagPropertyName}: '{currentETag}' }})
                     SET n += $properties, n.{_options.ETagPropertyName} = $eTag
                     RETURN n", parameters);
             }
@@ -76,7 +76,7 @@ namespace Orleans.Providers.Neo4j.Storage
         public async Task ClearStateAsync<T>(string grainType, string grainKey, IGrainState<T> grainState)
         {
             using var session = _driver.AsyncSession(o => o.WithDatabase(_options.Database));
-            await session.RunAsync($"MATCH (a:{grainType} {{ id: '{grainKey}' }}) DELETE a RETURN a");
+            await session.RunAsync($"MATCH (a:{grainType} {{ {_options.IdPropertyName}: '{grainKey}' }}) DELETE a RETURN a");
             grainState.RecordExists = false;
         }
 

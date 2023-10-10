@@ -11,6 +11,7 @@ namespace Orleans.Providers.Neo4j.Storage
         public required string Password { get; set; }
         public string StatePropertyName { get; set; } = "state";
         public string ETagPropertyName { get; set; } = "eTag";
+        public string IdPropertyName { get; set; } = "id";
         public JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions();
         public INeo4jGrainStorageKeyGenerator KeyGenerator { get; set; }
         public INeo4jGrainStorageETagGenerator ETagGenerator { get; set; }

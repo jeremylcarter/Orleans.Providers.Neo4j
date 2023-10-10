@@ -43,6 +43,7 @@ public class ActorGrain : Grain<ActorGrainState>, IActorGrain
 [Serializable]
 public class ActorGrainState
 {
+    public string Id { get; set; }
     public string Name { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public bool IgnoreThis { get; set; }
