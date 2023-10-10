@@ -28,14 +28,14 @@ public class ActorGrain : Grain<ActorGrainState>, IActorGrain
 
     public Task AddMovie(string movieId)
     {
-        State.Movies ??= new List<string>();
+        State.Movies ??= new HashSet<string>();
         State.Movies.Add(movieId);
         return WriteStateAsync();
     }
 
     public Task<List<string>> GetMovies()
     {
-        return Task.FromResult(State.Movies);
+        return Task.FromResult(State.Movies.ToList());
     }
 }
 
@@ -47,9 +47,10 @@ public class ActorGrainState
     public bool IgnoreThis { get; set; }
 
     [Neo4jRelationship("ACTED_IN")]
-    public List<string> Movies { get; set; }
+    public HashSet<string> Movies { get; set; }
 }
 
+[AttributeUsage(AttributeTargets.Property)]
 public class Neo4jRelationshipAttribute : Attribute
 {
     public Neo4jRelationshipAttribute(string relationshipName = "IS_CHILD_OF")
