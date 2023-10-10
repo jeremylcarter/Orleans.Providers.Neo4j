@@ -28,7 +28,7 @@ public class MyState
 
 Will be stored as a JSON string on the node as:
 
-```
+```json
 "state" : "{ \"Name\": \"John\", \"Age\": 42 }",
 "eTag" : "FC14312382"
 ```
@@ -70,7 +70,7 @@ public class MyStateConverter : INeo4jStateConverter<MyState>
 
 This will be stored on the node as:
 
-```
+```json
 "name" : "John",
 "age" : 42,
 "eTag" : "FC14312382"
