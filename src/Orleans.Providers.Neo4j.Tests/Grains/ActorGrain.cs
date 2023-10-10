@@ -1,4 +1,5 @@
 ﻿using Neo4j.Driver;
+using Orleans.Providers.Neo4j.Annotations;
 using Orleans.Providers.Neo4j.State;
 
 namespace Orleans.Providers.Neo4j.Tests.Grains;
@@ -48,6 +49,7 @@ public class ActorGrainState
     public HashSet<string> Movies { get; set; }
 }
 
+[NodeLabel("Actor")]
 public class ActorGrainStateConverter : INeo4jStateConverter<ActorGrainState>
 {
     public ActorGrainState ConvertFrom(IReadOnlyDictionary<string, object> convertFrom)

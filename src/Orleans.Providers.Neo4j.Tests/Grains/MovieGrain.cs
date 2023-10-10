@@ -1,4 +1,6 @@
-﻿namespace Orleans.Providers.Neo4j.Tests.Grains;
+﻿using Orleans.Providers.Neo4j.Annotations;
+
+namespace Orleans.Providers.Neo4j.Tests.Grains;
 
 public class MovieGrain : Grain<MovieGrainState>, IMovieGrain
 {
@@ -26,6 +28,7 @@ public class MovieGrain : Grain<MovieGrainState>, IMovieGrain
 }
 
 [Serializable]
+[NodeLabel("Movie")]
 public class MovieGrainState
 {
     public string Title { get; set; }
