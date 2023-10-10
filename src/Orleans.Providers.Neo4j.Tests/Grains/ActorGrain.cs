@@ -45,19 +45,7 @@ public class ActorGrainState
     public string Name { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public bool IgnoreThis { get; set; }
-
-    [Neo4jRelationship("ACTED_IN")]
     public HashSet<string> Movies { get; set; }
-}
-
-[AttributeUsage(AttributeTargets.Property)]
-public class Neo4jRelationshipAttribute : Attribute
-{
-    public Neo4jRelationshipAttribute(string relationshipName = "IS_CHILD_OF")
-    {
-        RelationshipName = relationshipName;
-    }
-    public string RelationshipName { get; }
 }
 
 public class ActorGrainStateConverter : INeo4jStateConverter<ActorGrainState>
