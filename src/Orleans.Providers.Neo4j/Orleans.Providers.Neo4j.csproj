@@ -1,10 +1,31 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<Title>Orleans Neo4j Provider</Title>
+		<Authors>cheesekun</Authors>
+		<Version>1.0.1</Version>
+		<Description>An Orleans storage, membership and reminders provider using Neo4j as the backing store.</Description>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIconUrl>https://raw.githubusercontent.com/dotnet/orleans/gh-pages/assets/logo_128.png</PackageIconUrl>
+		<RepositoryUrl>https://github.com/jeremylcarter/Orleans.Providers.Neo4j</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>orleans;providers;provider;actors;distributed</PackageTags>
+		<PackageReleaseNotes></PackageReleaseNotes>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<IncludeSource>true</IncludeSource>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Orleans.Reminders" Version="7.2.1" />
