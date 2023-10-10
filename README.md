@@ -42,29 +42,29 @@ For example:
 ```csharp
 public class MyState
 {
-	public string Name { get; set; }
-	public int Age { get; set; }
+  public string Name { get; set; }
+  public int Age { get; set; }
 }
 
 public class MyStateConverter : INeo4jStateConverter<MyState>
 {
-	public Dictionary<string, object> ConvertFrom(MyState state)
-	{
-		return new Dictionary<string, object>
-		{
-			{ "Name", state.Name },
-			{ "Age", state.Age }
-		};
-	}
+  public Dictionary<string, object> ConvertFrom(MyState state)
+  {
+    return new Dictionary<string, object>
+    {
+      { "Name", state.Name },
+      { "Age", state.Age }
+    };
+  }
 
-	public MyState ConvertTo(Dictionary<string, object> dictionary)
-	{
-		return new MyState
-		{
-			Name = dictionary["Name"].ToString(),
-			Age = int.Parse(dictionary["Age"].ToString())
-		};
-	}
+  public MyState ConvertTo(Dictionary<string, object> dictionary)
+  {
+    return new MyState
+    {
+      Name = dictionary["Name"].As<string>(),
+      Age = dictionary["Age"].As<int>()
+    };
+  }
 }
 ```
 
